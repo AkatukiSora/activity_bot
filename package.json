@@ -2,15 +2,21 @@
   "dependencies": {
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.5",
-    "prettier": "^3.3.3",
-    "typescript": "^5.6.3"
+    "mariadb": "^3.4.0"
   },
   "name": "activity_bot",
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/node": "^22.8.1",
+    "fs-extra": "^11.2.0",
+    "prettier": "^3.3.3",
+    "tsc-alias": "^1.8.10",
+    "typescript": "^5.6.3"
+  },
   "scripts": {
+    "build": "tsc -p ./tsconfig.json && tsc-alias -p tsconfig.json && node -e \"require('fs-extra').copySync('./src', './dist', { filter: (src) => (!src.endsWith('.ts') && !src.endsWith('.js'))})\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
