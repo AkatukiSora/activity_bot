@@ -1,7 +1,7 @@
 import * as mariadb from "mariadb";
 
 //DB接続
-class DB {
+export default new class DB {
   #pool;
 
   constructor() {
