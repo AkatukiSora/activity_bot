@@ -1,8 +1,4 @@
-import { Client, GatewayIntentBits } from "discord.js";
-import * as mariadb from "mariadb";
-
-import dotenv from "dotenv";
-dotenv.config();
+import { Client, EmbedBuilder, GatewayIntentBits } from "discord.js";
 
 //Discordのクライアントを作成
 const client = new Client({
@@ -15,15 +11,24 @@ client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
+import interactionCommands from "./interactions/index";
+
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
-
-  if (interaction.commandName === "ping") {
-    interaction.reply("Pong!");
-  }
-
-  if (interaction.commandName === "time") {
-    interaction.reply(new Date().toTimeString());
+  try {
+    interaction.reply(
+      await interactionCommands.execCommand(interaction.commandName),
+    );
+  } catch (e) {
+    console.error(e);
+    interaction.reply({
+      embeds: [
+        new EmbedBuilder({
+          title: "コマンド実行エラー",
+          description: "コマンド実行時にエラーが発生しました",
+        }),
+      ],
+    });
   }
 });
 
