@@ -1,7 +1,8 @@
 FROM ubuntu:22.04 AS base
 ENV NODE_ENV=production
 RUN apt-get update && \
-    apt-get install -y curl dumb-init && \
+    apt-get upgrade --no-install-recommends -y && \
+    apt-get install --no-install-recommends -y curl ca-certificates dumb-init && \
     curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s lts && \
     apt-get purge -y curl && \
     apt-get clean && \
@@ -14,12 +15,15 @@ WORKDIR /builder
 COPY ./package.json ./
 COPY ./yarn.lock ./
 RUN yarn install
-COPY ./ ./
-RUN yarn build
+RUN mkdir -p /builder/dist
 WORKDIR /builder/dist
 RUN cp ../package.json ./ && \
     cp ../yarn.lock ./ && \
     yarn install --production
+WORKDIR /builder
+COPY ./ ./
+RUN yarn build
+WORKDIR /builder/dist
 
 
 FROM base AS app

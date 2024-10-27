@@ -1,0 +1,26 @@
+services:
+  app:
+    build: .
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - env/.env.app
+    depends_on:
+      - db
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./dist
+          target: /app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+  db:
+      image: mariadb
+      env_file:
+        - env/.env.db
+      volumes:
+        - db-data:/var/lib/mysql
+volumes:
+  db-data:
