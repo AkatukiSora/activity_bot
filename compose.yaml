@@ -17,10 +17,10 @@ services:
         - action: rebuild
           path: package.json
   db:
-      image: mariadb
-      env_file:
-        - env/.env.db
-      volumes:
-        - db-data:/var/lib/mysql
+    image: mariadb
+    env_file:
+      - env/.env.db
+    volumes:
+      - db-data:/var/lib/mysql
 volumes:
   db-data:
