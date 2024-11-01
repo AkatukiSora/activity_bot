@@ -1,8 +1,10 @@
 {
   "dependencies": {
+    "base62": "^2.0.2",
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.5",
-    "mariadb": "^3.4.0"
+    "mariadb": "^3.4.0",
+    "ulidx": "^2.4.1"
   },
   "name": "activity_bot",
   "version": "0.0.0",
@@ -20,7 +22,7 @@
     "typescript": "^5.6.3"
   },
   "scripts": {
-    "build": "tsc -p ./tsconfig.build.json && tsc-alias -p tsconfig.build.json && node -e \"require('fs-extra').copySync('./src', './dist', { filter: (src) => (!src.endsWith('.ts') && !src.endsWith('.js'))})\"",
+    "build": "npx tsc -p ./tsconfig.build.json && npx tsc-alias -p tsconfig.build.json && node -e \"require('fs-extra').copySync('./src', './dist', { filter: (src) => (!src.endsWith('.ts') && !src.endsWith('.js'))})\"",
     "test": "jest"
   },
   "repository": {
