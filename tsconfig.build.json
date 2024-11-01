@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "removeComments": true,
+    "removeComments": true
   },
   "extends": "./tsconfig.json",
   "exclude": ["**/*.test.ts"]
