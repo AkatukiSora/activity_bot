@@ -2,7 +2,7 @@ name: actionlint
 
 on:
   push:
-    paths: '.github/workflows/*.ya?ml'
+    paths: ".github/workflows/*.ya?ml"
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -18,7 +18,7 @@ jobs:
 
       - name: Run actionlint
         env:
-          SHELLCHECK_OPTS: --exclude=SC2129,SC2086 
+          SHELLCHECK_OPTS: --exclude=SC2129,SC2086
         run: |
           bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
           ./actionlint -color
