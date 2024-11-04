@@ -1,6 +1,6 @@
 @startuml DB_ER
 
-' 定義したデータ型を使うための設定
+' データ型の定義
 !define bigint UNSIGNED
 !define int UNSIGNED
 !define varchar(x) VARCHAR(x)
@@ -9,6 +9,9 @@
 !define boolean BOOLEAN
 !define datetime DATETIME
 !define timestamp TIMESTAMP
+!define char(x) CHAR(x)
+!define text TEXT
+!define date DATE
 
 ' エンティティの定義
 
@@ -18,6 +21,10 @@ entity user_opt_out {
     global_opt_out : boolean
     deny_score_access : boolean
     updated_at : datetime
+    --
+    ' インデックス
+    indexes:
+    (なし)
 }
 
 entity user_server_opt_outs {
@@ -27,6 +34,11 @@ entity user_server_opt_outs {
     server_id : bigint
     opt_out : boolean
     updated_at : datetime
+    --
+    ' インデックス
+    UNIQUE (user_id, server_id)
+    INDEX (user_id)
+    INDEX (server_id)
 }
 
 entity action_types {
@@ -34,6 +46,9 @@ entity action_types {
     --
     name : varchar(50) <<UQ>>
     base_points : float
+    --
+    ' インデックス
+    UNIQUE (name)
 }
 
 entity adjustment_types {
@@ -41,6 +56,9 @@ entity adjustment_types {
     --
     name : varchar(50) <<UQ>>
     multiplier : decimal(5,2)
+    --
+    ' インデックス
+    UNIQUE (name)
 }
 
 entity activity_log {
@@ -51,6 +69,12 @@ entity activity_log {
     action_type_id : int <<FK>>
     timestamp : datetime
     base_points : float
+    --
+    ' インデックス
+    INDEX (user_id)
+    INDEX (server_id)
+    INDEX (timestamp)
+    INDEX (user_id, server_id, timestamp)
 }
 
 entity activity_log_adjustments {
@@ -58,6 +82,11 @@ entity activity_log_adjustments {
     --
     log_id : bigint <<FK>>
     adjustment_type_id : int <<FK>>
+    --
+    ' インデックス
+    UNIQUE (log_id, adjustment_type_id)
+    INDEX (log_id)
+    INDEX (adjustment_type_id)
 }
 
 entity user_points {
@@ -68,6 +97,11 @@ entity user_points {
     period : date
     total_points : float
     last_updated : datetime
+    --
+    ' インデックス
+    UNIQUE (user_id, server_id, period)
+    INDEX (user_id)
+    INDEX (server_id, period, total_points)
 }
 
 entity error_logs {
@@ -78,6 +112,12 @@ entity error_logs {
     message : text
     user_id : bigint <<FK>>
     server_id : bigint
+    --
+    ' インデックス
+    INDEX (timestamp)
+    INDEX (level)
+    INDEX (user_id)
+    INDEX (server_id)
 }
 
 ' リレーションシップの定義
