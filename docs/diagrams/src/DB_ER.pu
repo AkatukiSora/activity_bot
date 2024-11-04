@@ -1,0 +1,106 @@
+@startuml DB_ER
+
+' 定義したデータ型を使うための設定
+!define bigint UNSIGNED
+!define int UNSIGNED
+!define varchar(x) VARCHAR(x)
+!define float FLOAT
+!define decimal(x,y) DECIMAL(x,y)
+!define boolean BOOLEAN
+!define datetime DATETIME
+!define timestamp TIMESTAMP
+
+' エンティティの定義
+
+entity user_opt_out {
+    * user_id : bigint <<PK>>
+    --
+    global_opt_out : boolean
+    deny_score_access : boolean
+    updated_at : datetime
+}
+
+entity user_server_opt_outs {
+    * id : bigint <<PK>>
+    --
+    user_id : bigint <<FK>>
+    server_id : bigint
+    opt_out : boolean
+    updated_at : datetime
+}
+
+entity action_types {
+    * action_type_id : int <<PK>>
+    --
+    name : varchar(50) <<UQ>>
+    base_points : float
+}
+
+entity adjustment_types {
+    * adjustment_type_id : int <<PK>>
+    --
+    name : varchar(50) <<UQ>>
+    multiplier : decimal(5,2)
+}
+
+entity activity_log {
+    * log_id : bigint <<PK>>
+    --
+    user_id : bigint <<FK>>
+    server_id : bigint
+    action_type_id : int <<FK>>
+    timestamp : datetime
+    base_points : float
+}
+
+entity activity_log_adjustments {
+    * id : bigint <<PK>>
+    --
+    log_id : bigint <<FK>>
+    adjustment_type_id : int <<FK>>
+}
+
+entity user_points {
+    * id : bigint <<PK>>
+    --
+    user_id : bigint <<FK>>
+    server_id : bigint
+    period : date
+    total_points : float
+    last_updated : datetime
+}
+
+entity error_logs {
+    * error_id : char(26) <<PK>>
+    --
+    timestamp : datetime
+    level : varchar(10)
+    message : text
+    user_id : bigint <<FK>>
+    server_id : bigint
+}
+
+' リレーションシップの定義
+
+' user_server_opt_outs と user_opt_out の関係
+user_opt_out ||--o{ user_server_opt_outs : "user_id"
+
+' activity_log と user_opt_out の関係
+user_opt_out ||--o{ activity_log : "user_id"
+
+' activity_log と action_types の関係
+action_types ||--o{ activity_log : "action_type_id"
+
+' activity_log_adjustments と activity_log の関係
+activity_log ||--o{ activity_log_adjustments : "log_id"
+
+' activity_log_adjustments と adjustment_types の関係
+adjustment_types ||--o{ activity_log_adjustments : "adjustment_type_id"
+
+' user_points と user_opt_out の関係
+user_opt_out ||--o{ user_points : "user_id"
+
+' error_logs と user_opt_out の関係（任意）
+user_opt_out ||--o{ error_logs : "user_id"
+
+@enduml
