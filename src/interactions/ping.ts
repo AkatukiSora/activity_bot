@@ -1,5 +1,5 @@
 import { EmbedBuilder } from "@discordjs/builders";
-import interactionReplyFunction from "./interactionFunction";
+import interactionReplyFunction from "./interactionReplyFunction";
 
 const pingEmbed = new EmbedBuilder({
   title: "Pong!",
