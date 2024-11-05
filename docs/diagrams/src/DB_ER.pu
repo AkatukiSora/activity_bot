@@ -68,7 +68,6 @@ entity activity_log {
     server_id : bigint
     action_type_id : int <<FK>>
     timestamp : datetime
-    base_points : float
     --
     ' インデックス
     INDEX (user_id)
