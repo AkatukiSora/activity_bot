@@ -109,7 +109,7 @@ entity error_logs {
     timestamp : datetime
     level : varchar(10)
     message : text
-    user_id : bigint <<FK>>
+    user_id : bigint
     server_id : bigint
     --
     ' インデックス
@@ -117,6 +117,17 @@ entity error_logs {
     INDEX (level)
     INDEX (user_id)
     INDEX (server_id)
+}
+
+entity server_settings {
+    * server_id : bigint <<PK>>
+    --
+    ranking_channel_id : bigint
+    updated_at : datetime
+    --
+    ' インデックス
+    indexes:
+    (なし)
 }
 
 ' リレーションシップの定義

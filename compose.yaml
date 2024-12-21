@@ -1,12 +1,11 @@
 services:
   app:
     build: .
-    environment:
-      - NODE_ENV=development
     env_file:
       - env/.env.app
     depends_on:
       - db
+      - redis
     develop:
       watch:
         - action: sync+restart
@@ -22,5 +21,17 @@ services:
       - env/.env.db
     volumes:
       - db-data:/var/lib/mysql
+  redis:
+    image: redis
+    env_file:
+      - env/.env.redis
+    volumes:
+      - type: volume
+        source: redis-data
+        target: /data
+      - type: bind
+        source: ./env/redis.conf
+        target: /etc/redis/redis.conf
 volumes:
   db-data:
+  redis-data:

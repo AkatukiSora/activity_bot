@@ -32,5 +32,5 @@ RUN groupadd -g 1234 node && \
 COPY --from=builder --chown=node:node /builder/dist /app
 USER node
 WORKDIR /app
-#CMD ["dumb-init", "node", "index.js"]
-CMD ["dumb-init", "node", "dbtest.js"]
+CMD ["dumb-init", "node", "index.js"]
+#CMD ["dumb-init", "node", "testredis.js"]

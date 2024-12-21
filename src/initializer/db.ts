@@ -28,17 +28,23 @@ const initializeDatabase = async (): Promise<void> => {
     conn = await pool.getConnection();
 
     // トランザクションを開始
+    logger.info("データベースの初期化を開始します。");
     await conn.beginTransaction();
 
     // テーブルを作成（存在しない場合）
+    logger.debug("create tables");
     await createTables(conn);
 
     // テーブルにデータを挿入
+    logger.debug("insert actionTypes");
     await insertActionTypes(conn, actionTypesData);
+    logger.debug("insert AdjustmentsTypes");
     await insertAdjustmentTypes(conn, adjustmentTypesData);
 
     // トランザクションをコミット
+    logger.debug("transaction commit");
     await conn.commit();
+    logger.debug("transaction commit success");
   } catch (err) {
     if (conn) {
       // エラー時にトランザクションをロールバック
@@ -158,16 +164,28 @@ const createTables = async (conn: mariadb.Connection): Promise<void> => {
       INDEX idx_server_id (server_id)
     )
   `);
+
+  // server_settings テーブルを作成
+  await conn.query(`
+    CREATE TABLE IF NOT EXISTS server_settings (
+      server_id BIGINT UNSIGNED PRIMARY KEY,
+      ranking_channel_id BIGINT UNSIGNED NOT NULL,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    )
+  `);
 };
 
 const insertActionTypes = async (
   conn: mariadb.Connection,
   data: Record<string, number>,
 ): Promise<void> => {
+  logger.debug("======StartInsertActionTypes======");
   const existingNames = await getExistingNames(conn, "action_types");
+  logger.debug(`existingEntries: ${existingNames}`);
   const newEntries = Object.entries(data).filter(
     ([name]) => !existingNames.includes(name),
   );
+  logger.debug(`newEntries: ${newEntries.join(",") || "none"}`);
 
   if (newEntries.length > 0) {
     const insertValues = newEntries.map(([name, basePoints]) => [
@@ -179,16 +197,20 @@ const insertActionTypes = async (
       insertValues,
     );
   }
+  logger.debug("======EndInsertActionTypes======");
 };
 
 const insertAdjustmentTypes = async (
   conn: mariadb.Connection,
   data: Record<string, number>,
 ): Promise<void> => {
+  logger.debug("======StartInsertAdjustmentTypes======");
   const existingNames = await getExistingNames(conn, "adjustment_types");
+  logger.debug(`existingEntries: ${existingNames}`);
   const newEntries = Object.entries(data).filter(
     ([name]) => !existingNames.includes(name),
   );
+  logger.debug(`newEntries: ${newEntries.join(",") || "none"}`);
 
   if (newEntries.length > 0) {
     const insertValues = newEntries.map(([name, multiplier]) => [
@@ -200,6 +222,7 @@ const insertAdjustmentTypes = async (
       insertValues,
     );
   }
+  logger.debug("======EndInsertAdjustmentTypes======");
 };
 
 const getExistingNames = async (
@@ -211,13 +234,14 @@ const getExistingNames = async (
 };
 
 // 初期化関数を即時実行
-initializeDatabase()
-  .then(() => {
+const asyncDBInitial = async () => {
+  try {
+    await initializeDatabase();
     logger.info("データベースの初期化に成功しました。");
-  })
-  .catch((err) => {
+  } catch (err) {
     logger.fatal("データベースの初期化に失敗しました:", err);
     throw new Error("データベースの初期化に失敗しました");
-  });
-
+  }
+};
 export default pool;
+export { asyncDBInitial };
